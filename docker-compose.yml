@@ -1,0 +1,31 @@
+# version: '3.9'
+
+services:
+  backend:
+    build:
+      context: .                     
+      dockerfile: Dockerfile           
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/noteit
+      - PORT=8080                                
+    ports:
+      - "8080:8080"                             
+    depends_on:
+      - mongo                                  
+    networks:
+      - noteit-network                             
+
+  mongo:
+    image: mongo:latest                        
+    restart: always                            
+    volumes:
+      - mongo_data:/data/db                    
+    networks:
+      - noteit-network                             
+
+networks:
+  noteit-network:                                  
+    driver: bridge                            
+
+volumes:
+  mongo_data:
