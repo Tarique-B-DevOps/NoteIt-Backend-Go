@@ -5,7 +5,7 @@ import (
     "os"
     "log"
     "time"
-
+    "fmt"
     "go.mongodb.org/mongo-driver/mongo"
     "go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -28,8 +28,15 @@ func NoteCol() *mongo.Collection {
 // ConnectDatabase connects to MongoDB
 func ConnectDatabase() {
     var mongoURI string
-    if os.Getenv("ENVIRONMENT") == "Prod" {
-        mongoURI = os.Getenv("MONGO_URI")
+    environment := os.Getenv("ENVIRONMENT")
+    
+    if environment == "Prod" {
+        username := os.Getenv("MONGO_USERNAME")
+        password := os.Getenv("MONGO_PASSWORD")
+        cluster := os.Getenv("MONGO_CLUSTER_URI")
+        
+        mongoURI = fmt.Sprintf("mongodb+srv://%s:%s@%s/?retryWrites=true&w=majority&appName=prod-cluster",
+            username, password, cluster)
     } else {
         mongoURI = "mongodb://localhost:27017"
     }
