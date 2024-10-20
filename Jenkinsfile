@@ -11,7 +11,7 @@ pipeline {
         stage('Build Docker Image with Arguments') {
             steps {
                 script {
-                    docker.build("${GCR_URL}:latest")
+                    docker.build("${GCR_URI}:latest")
                 }
             }
         }
