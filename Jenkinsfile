@@ -38,11 +38,26 @@ pipeline {
         stage('Push to GCR') {
             steps {
                 script {
-                    docker.withRegistry('https://gcr.io', 'gcp-devops-proj-servive-account') {
+                    docker.withRegistry('https://gcr.io', 'gcp-staging-project-sa') {
                         docker.image("${GCR_URI}:latest").push()
                     }
                 }
             }
         }
     }
+
+    post {
+    always {
+        slackSend color: "#FFFF00", message: """Docker build started: ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)
+        Docker image: ${GCR_URI}:latest
+        """
+    }
+    success {
+        slackSend color: "#00FF00", message: "Docker image built and pushed successfully - Job: ${env.JOB_NAME} - Build: ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
+    }
+    failure {
+        slackSend failOnError: true, color: "#FF0000", message: "Docker build/push failed - Job: ${env.JOB_NAME} - Build: ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
+    }
+}
+
 }
